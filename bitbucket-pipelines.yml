@@ -1,0 +1,17 @@
+image: atlassian/default-image:3
+
+pipelines:
+  default:
+    - step:
+        name: "Setup SSH, Pull Code, ERPNext Migration"
+        script:
+          - apt-get update && apt-get install -y sshpass
+          - echo "Installing sshpass and establishing connection..."
+          - sshpass -p $UBUNTU_SSH_PASSWORD ssh -o StrictHostKeyChecking=no $USERNAME@$HOST -p $PORT << EOF
+          - echo "Connected to Remote Server"
+          - cd /home/$USERNAME/frappe-bench/apps/$APP_NAME
+          - echo "Pulling latest code from repository..."
+          - git pull
+          - echo "Running ERPNext Migration..."
+          - bench --site $SITE_NAME migrate
+          - echo "Migration completed."
